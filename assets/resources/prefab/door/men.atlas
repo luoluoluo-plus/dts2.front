@@ -1,0 +1,48 @@
+
+men.png
+size: 355,355
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+men1_1
+  rotate: false
+  xy: 94, 321
+  size: 63, 32
+  orig: 63, 32
+  offset: 0, 0
+  index: -1
+men1_2
+  rotate: false
+  xy: 211, 323
+  size: 63, 14
+  orig: 63, 14
+  offset: 0, 0
+  index: -1
+men7_1
+  rotate: false
+  xy: 303, 334
+  size: 50, 19
+  orig: 56, 25
+  offset: 3, 3
+  index: -1
+men7_2
+  rotate: false
+  xy: 159, 325
+  size: 50, 28
+  orig: 56, 32
+  offset: 3, 2
+  index: -1
+men9_1
+  rotate: false
+  xy: 2, 321
+  size: 90, 32
+  orig: 90, 32
+  offset: 0, 0
+  index: -1
+men9_2
+  rotate: false
+  xy: 211, 339
+  size: 90, 14
+  orig: 90, 14
+  offset: 0, 0
+  index: -1

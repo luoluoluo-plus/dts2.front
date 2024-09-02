@@ -1,0 +1,158 @@
+import UIBase from '../ui/UIBase';
+import * as DevAPI from "cocosapi";
+import { Utils } from '../../utils/Utils';
+import { ConfigModule } from '../../userData/ConfigModule';
+import { WeiXinPlugin } from 'weixinplugin';
+import UIHelp from '../ui/UIHelp';
+import GameDataCenter from '../../userData/GameDataCenter';
+
+const { ccclass, property, menu, executeInEditMode,help } = cc._decorator;
+
+/**
+ *  [VM-Login]
+ *  绑定脚本，系统自动判定微信登录，小程序登录，h5登录
+ */
+@ccclass
+// @executeInEditMode
+@menu('ModelViewer/VM-Login(登录)')
+// @help('https://github.com/wsssheep/cocos_creator_mvvm_tools/blob/master/docs/VMLogin.md')
+export default class VMLogin extends UIBase {
+    @property({type: cc.Node, displayName:"登录按钮"})
+    btnLogin: cc.Node = null;
+
+    @property({
+        displayName:'是否有自动登录'
+    })
+    haveAutoLogin:boolean = false;
+
+    @property({
+        displayName:'是否有授权toggle'
+    })
+    haveShouquanToggle:boolean = false;
+
+    @property({type: [cc.Component.EventHandler], displayName: '登录成功回掉'})
+    successEvents:cc.Component.EventHandler[] = [];
+
+    @property({
+        type: cc.Toggle,
+        displayName:'授权toggle节点',
+        visible:function(){return this.haveShouquanToggle === true}
+    })
+    shouquanToggle: cc.Toggle = null;
+
+    get isShouquan(): boolean{
+        return  JSON.parse(cc.sys.localStorage.getItem("isShouquan"));
+    }
+
+    set isShouquan(v: boolean){
+        cc.sys.localStorage.setItem("isShouquan", JSON.stringify(v));
+    }
+
+    onUILoad(){
+        DevAPI.GlobalUnit.JWT_STR = cc.sys.localStorage.getItem("jwt");
+        if(this.haveAutoLogin && DevAPI.GlobalUnit.JWT_STR){
+            this.jwtLogin();
+        }else{
+            if(cc.sys.platform === cc.sys.WECHAT_GAME){
+                //微信小游戏检测是否授权
+                WeiXinPlugin.checkShouquan(this.wechatWxLogin);
+            }else if(cc.sys.isNative){
+                //向微信注册
+                WeiXinPlugin.registerWX(ConfigModule.APPID, ConfigModule.UNIVERSAL_LINK);
+            }
+        }
+    }
+
+    onShow() {
+		this.onRegisterEvent(this.btnLogin, this.login);
+
+        if(this.shouquanToggle){
+            this.onRegisterEvent(this.shouquanToggle.node, this.onToggleClick);
+        }
+	}
+
+    onStart(){
+        if(this.haveShouquanToggle){
+            this.shouquanToggle.isChecked = this.isShouquan;
+        }
+    }
+
+    onToggleClick(){
+        this.isShouquan = !this.isShouquan;
+    }
+
+    login(){
+        if(this.haveShouquanToggle && !this.isShouquan){
+            return UIHelp.ShowTips("请仔细阅读并同意相关协议");
+        }
+
+        if(cc.sys.isNative){
+            this.nativeWxLogin();
+        }else if(cc.sys.platform == cc.sys.WECHAT_GAME){
+            this.wechatWxLogin();
+        }else{
+            this.h5Login();
+        }
+    }
+
+    //h5登录
+    h5Login() {
+        var _code = Utils.getQueryString("code");
+        if(!_code){
+            if(CC_DEBUG){
+                _code = "1";
+            }else{
+                return console.error("没有code");
+            }
+        }
+
+        DevAPI.User.GetUserTestlogin(_code, function(response: DevAPI.GetUserTestloginResponse){
+            this.loginCallback(response);
+        }.bind(this));
+    }
+
+    //android，ios微信登录
+    nativeWxLogin(){
+        var callBack = function(code){
+            console.log("code-----", code)
+
+            DevAPI.User.GetUserWxlogin(code, "", function(response: DevAPI.GetUserWxloginResponse){
+                this.loginCallback(response);
+            }.bind(this));
+        }.bind(this);
+
+        WeiXinPlugin.wxLogin(callBack);
+    }
+
+    //微信小游戏登录
+    wechatWxLogin(){
+        var callBack = function(data){
+            console.log("code-----", data)
+
+            DevAPI.User.PostUserXcxlogin(data.code, data.encryptData, data.iv, data.pid, function(response: DevAPI.PostUserXcxloginResponse){
+                this.loginCallback(response);
+            }.bind(this));
+        }.bind(this);
+
+        WeiXinPlugin.wxLogin(callBack);
+    }
+
+    //jwt登录
+    jwtLogin() {
+        DevAPI.User.GetUserJwtlogin(DevAPI.GlobalUnit.JWT_STR, function(response: DevAPI.GetUserTestloginResponse){
+            this.loginCallback(response);
+        }.bind(this));
+    }
+
+    loginCallback(response){
+        console.log("登录成功，user：", response.data.user)
+        DevAPI.GlobalUnit.JWT_STR = response.data.jwt;
+        cc.sys.localStorage.setItem("jwt", response.data.jwt)
+        GameDataCenter.playerModel.initUser(response.data.user);
+        if(Array.isArray(this.successEvents)){
+            this.successEvents.forEach(v=>{
+                v.emit([response.data]);
+            })
+        }
+    }
+}

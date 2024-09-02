@@ -1,0 +1,9 @@
+{
+  "engine": "cocos2d-html5",
+  "packages": "packages",
+  "version": "2.4.10",
+  "name": "demo",
+  "id": "2bf63e66-1cb7-4bed-92ff-37496569963b",
+  "isNew": false,
+  "description": "Hello world new project template."
+}

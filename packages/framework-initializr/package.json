@@ -1,0 +1,28 @@
+{
+    "name": "framework-initializr",
+    "version": "0.0.1",
+    "description": "The package template for getting started.",
+    "author": "Cocos Creator",
+    "main": "main.js",
+    "main-menu": {
+        "i18n:MAIN_MENU.package.title/framework-initializr/create-node-tree": {
+            "message": "framework-initializr:create-node-tree"
+        },
+        "i18n:MAIN_MENU.package.title/framework-initializr/install-framework": {
+            "message": "framework-initializr:install-framework"
+        },
+        "i18n:MAIN_MENU.package.title/framework-initializr/create-ui-template": {
+            "message": "framework-initializr:create-ui-template"
+        },
+        "i18n:MAIN_MENU.package.title/framework-initializr/path-config": {
+            "message": "framework-initializr:config"
+        }
+    },
+    "panel": {
+        "main": "panel/index.js",
+        "type": "dockable",
+        "title": "path-config",
+        "width": 800,
+        "height": 400
+    }
+}

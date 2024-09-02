@@ -1,0 +1,25 @@
+import IDataModel from "../framework/model/IDataModel";
+import GameDataCenter from "./GameDataCenter";
+
+export default class SocketModel extends IDataModel {
+    constructor() {
+        super('SocketModel');
+    }
+
+    /**需要重写 */
+    getMessageListeners() {
+        return {
+            // key为消息名，value为触发函数
+            ['game_login']: (msg) => { this.socket_login(msg) },
+        }
+    }
+
+    //登录
+    login(){
+        this.sendSocketMsg("game", "login", {})
+    }
+
+    socket_login(msg){
+        console.log(msg)
+    }
+}

@@ -1,0 +1,43 @@
+import IDataModel from "../framework/model/IDataModel";
+import DevModel from "./DevModel";
+import PlayerModel from "./PlayerModel";
+import { SingletonFactory } from "../framework/lib/SingletonFactory";
+import { VM } from './../framework/component/ViewModel';
+import SocketModel from "./SocketModel";
+
+class GameDataCenter {
+    private _tModel: Array<IDataModel> = [];
+
+    devModel: DevModel = null;
+    playerModel: PlayerModel = null;
+    socketModel: SocketModel = null;
+
+    public static instance;
+
+    constructor() {
+        GameDataCenter.instance = this;
+    }
+
+    newModel<T extends IDataModel>(c: { new(): T }): T {
+        let obj = SingletonFactory.getInstance(c);
+        this._tModel.push(obj);
+        return obj;
+    }
+
+    clear() {
+        this._tModel.forEach(m => {
+            m.clear();
+        });
+    }
+
+    initModule() {
+        this.devModel= this.newModel(DevModel);
+        this.playerModel = this.newModel(PlayerModel);
+        this.socketModel = this.newModel(SocketModel);
+
+        VM.add(this.playerModel, 'playerModel');
+    }
+}
+
+export default new GameDataCenter();
+(window as any).GameDataCenter = GameDataCenter;

@@ -1,0 +1,12 @@
+export class ConfigModule {
+    public static WS_URL = "xxxxx"                //正式服地址
+    public static HTTP_URL = "http://fdhygame.shxinger.com";           //正式服地址
+    public static WS_URL_LOCAL = "xxxx"           //内网地址
+    public static HTTP_URL_LOCAL = "xxxx";      //内网地址
+    public static SHARE_URL = "http://fenxiang.ttyangzhu.com/index.html";           //分享下载页链接
+    public static VERSION = "v1.0.1"
+    public static SHOW_LOG = true;                    //是否展示log
+    public static IS_RELEASE = true;                 //是否是正式版
+    public static APPID = "wx533d7ddce2294263"      //android                   //微信开放平台appid
+    public static UNIVERSAL_LINK = "https://game.koudaihaiwan.com/tanqiu/"     //ios微信跳转链接
+}

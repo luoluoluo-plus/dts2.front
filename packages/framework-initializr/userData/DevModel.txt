@@ -1,0 +1,50 @@
+import * as DevAPI from "cocosapi";
+import EventMng from "../framework/manager/EventMng";
+import UIHelp from "../framework/ui/UIHelp";
+import IDataModel from "../framework/model/IDataModel";
+import { ConfigModule } from "./ConfigModule";
+import { GameEvent } from "./EventConst";
+import { Utils } from "../utils/Utils";
+
+if(ConfigModule.IS_RELEASE){
+    DevAPI.GlobalUnit.BASE_URL = ConfigModule.HTTP_URL;
+}else{
+    DevAPI.GlobalUnit.BASE_URL = ConfigModule.HTTP_URL_LOCAL;
+}
+
+DevAPI.GlobalUnit.BeginLoading = function(){
+    console.log("BeginLoading")
+    UIHelp.ShowLoding();
+}
+
+DevAPI.GlobalUnit.EndLoading = function(){
+    console.log("EndLoading")
+    UIHelp.CloseLoding();
+}
+
+DevAPI.GlobalUnit.HttpFailed = function(ok: boolean, status: number, statusText: string){
+    console.log("HttpFailed", status)
+    UIHelp.ShowTips(statusText);
+    UIHelp.CloseLoding();
+}
+
+DevAPI.GlobalUnit.HttpErr = function(errCode: number, errMsg: string){
+    console.log("HttpErr", errCode)
+    UIHelp.CloseLoding();
+    UIHelp.ShowTips(errMsg);
+
+    if(errCode == 2){
+        cc.sys.localStorage.removeItem("jwt")
+    }
+}
+
+export default class DevModel extends IDataModel {
+    constructor() {
+        super('dev');
+    }
+
+    clearLocalStorage(){
+        cc.sys.localStorage.removeItem("jwt");
+        cc.sys.localStorage.removeItem("isShouquan");
+    }
+}

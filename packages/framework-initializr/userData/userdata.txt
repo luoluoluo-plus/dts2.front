@@ -1,0 +1,33 @@
+import { VM } from './../framework/component/ViewModel';
+
+export class GlobalData {
+    name: string = 'shark';
+    gold: number = 99767578.78;
+    avatar: string = "https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=468727759,3818736238&fm=26&gp=0.jpg";
+    exp: number = 1000;
+    nextexp: number = 1500;
+    guan: number = 0;
+
+    public static instance;
+
+    constructor() {
+        GlobalData.instance = this;
+    }
+}
+
+export class UIInfo {
+    bt_index: number = 0;
+}
+
+//原始数据
+export let global: GlobalData = new GlobalData();
+export let uiInfo: UIInfo = new UIInfo();
+
+(window as any).globalData = GlobalData;
+
+VM.add(global, 'global'); 
+VM.add(uiInfo, 'uiinfo'); 
+
+//使用注意事项
+//VM 得到的回调 onValueChanged ，不能强制修改赋值
+//VM 的回调 onValueChanged 中，不能直接操作VM数据结构,否则会触发 循环调用

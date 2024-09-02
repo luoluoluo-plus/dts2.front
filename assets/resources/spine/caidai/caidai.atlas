@@ -1,0 +1,41 @@
+
+caidai.png
+size: 196,196
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+1
+  rotate: false
+  xy: 22, 166
+  size: 34, 28
+  orig: 34, 28
+  offset: 0, 0
+  index: -1
+2
+  rotate: false
+  xy: 2, 176
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+3
+  rotate: true
+  xy: 58, 162
+  size: 32, 33
+  orig: 32, 33
+  offset: 0, 0
+  index: -1
+4
+  rotate: false
+  xy: 93, 162
+  size: 34, 32
+  orig: 34, 32
+  offset: 0, 0
+  index: -1
+5
+  rotate: true
+  xy: 129, 159
+  size: 35, 65
+  orig: 35, 65
+  offset: 0, 0
+  index: -1

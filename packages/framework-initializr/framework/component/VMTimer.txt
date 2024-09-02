@@ -1,0 +1,47 @@
+import { GameEvent } from "../../userData/EventConst";
+import GameDataCenter from "../../userData/GameDataCenter";
+import { FrameEventConst } from "../const/FrameEventConst";
+import EventMng from "../manager/EventMng";
+
+const { ccclass, menu, property } = cc._decorator;
+
+@ccclass
+@menu('ModelViewer/VM-Timer (计时器，每秒刷新时间)')
+export default class TimerNode extends cc.Component {
+	onLoad() {
+		cc.game.addPersistRootNode(this.node);
+		this.createSchedule();
+
+        cc.game.on(cc.game.EVENT_SHOW, function () {
+			if(GameDataCenter.playerModel.serverTime){
+				//主动拉取服务器时间戳
+				if(GameDataCenter.playerModel.getServerTime){
+					GameDataCenter.playerModel.getServerTime()
+				}
+			}
+        }); 
+	}
+
+	onEnable() {
+	}
+
+	onDisable() {
+	}
+
+	createSchedule(){
+		// 以秒为单位的时间间隔
+        var interval = 1;
+        // 重复次数
+        var repeat = cc.macro.REPEAT_FOREVER;
+        // 开始延时
+        var delay = 0;
+        this.schedule(function() {
+			// 这里的 this 指向 component
+			if(GameDataCenter.playerModel.serverTime){
+				GameDataCenter.playerModel.serverTime += 1;
+
+				EventMng.emit(FrameEventConst.SERVER_TIME_CHANGE);
+			}
+        }, interval, repeat, delay);
+	}
+}

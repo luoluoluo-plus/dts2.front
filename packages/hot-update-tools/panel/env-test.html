@@ -1,0 +1,112 @@
+<ui-section>
+    <div class="header greenColor">项目测试环境manifest信息</div>
+    <div class="layout vertical">
+        <div class="layout vertical">
+            <ui-prop name="server dir">
+                <div class="flex-1 layout horizontal center">
+                    <ui-input class="flex-2" readonly="readonly" v-value="localServerPath"></ui-input>
+                    <ui-button v-on:confirm="onSelectLocalServerPath">...</ui-button>
+                    <ui-button v-on:confirm="onOpenLocalServer"><i class="icon-doc-text"></i></ui-button>
+                    <ui-button class="green" v-on:confirm="onCopyFileToLocalServer">step3：部署</ui-button>
+                </div>
+            </ui-prop>
+            <!-- <ui-prop name="server url" tooltip="如果你开启了服务，请确保 package url 和 server url 一致，否则测试环境可能无法正常工作">
+                <div class="layout horizontal flex-1 end-justified center-center">
+                    <div class="flex-1"><a v-show="serverApp!==null" href="{{serverUrl}}"><span>{{serverUrl}}</span>
+                        </a><span v-show="serverApp===null">--</span></div>
+                    <ui-button class="green" v-show="serverApp===null" @confirm="onBtnClickOpenStaticFileServer">开启服务
+                    </ui-button>
+                    <ui-button class="red" v-on:confirm="onCleanSimRemoteRes"><i class="icon-trash-empty"
+                            title="删除win32模拟器热更新资源"></i> 清理模拟器缓存</ui-button>
+                </div>
+            </ui-prop> -->
+            <ui-prop name="package url" tooltip="点击打开 URL/version.manifest">
+                <div class="flex-1 layout horizontal center"><a class="flex-2"
+                        href="{{serverPackageUrl}}/version.manifest"
+                        style="white-space: nowrap;">{{serverPackageUrl}}</a></div>
+            </ui-prop>
+            <ui-prop name="version">
+                <div class="flex-1 layout horizontal center">
+                    <h4 class="flex-2">{{serverVersion}}</h4>
+                    <ui-button class="end-justified" v-on:confirm="refreshLocalServerVersion"><i
+                            class="icon-arrows-cw"></i></ui-button>
+                </div>
+            </ui-prop>
+        </div>
+        <div class="layout horizontal center">
+            <h2 class="flex-1">上传热更新</h2>
+            <div class="flex-2">bucket,如果指定路径：bucket/文件夹名1/文件夹名2/...</div>
+            <ui-input class="flex-none" v-on:blur="onInputRegengxinOver" v-value="bucket"></ui-input>
+            <ui-button class="flex-none green" v-if="testEnvALi" v-on:confirm="onBtnClickAliTest">step4：上传阿里云</ui-button>
+            <ui-button class="flex-none green" v-if="testEnvHuawei" v-on:confirm="onBtnClickHuaweiTest">step4：上传华为云</ui-button>
+            <ui-button class="flex-none green" v-if="testEnvTengxun" v-on:confirm="onBtnClickTengxuTest">step4：上传腾讯云</ui-button>
+        </div>
+
+        <div class="layout horizontal center">
+            <h2 class="flex-1">上传分享页</h2>
+            <div class="flex-2">bucket,如果指定路径：bucket/文件夹名1/文件夹名2/...</div>
+            <ui-input class="flex-none" v-on:blur="onInputShareOver" v-value="shareBucket"></ui-input>
+            <ui-button class="flex-none red" v-if="testEnvALi" v-on:confirm="onShareAliTest">上传分享页到阿里云</ui-button>
+            <ui-button class="flex-none red" v-if="testEnvHuawei" v-on:confirm="onShareHuaweiTest">上传分享页到华为云</ui-button>
+            <ui-button class="flex-none red" v-if="testEnvTengxun" v-on:confirm="onShareTengxuTest">上传分享页到腾讯云</ui-button>
+        </div>
+
+        <div class="layout horizontal center">
+            <h2 class="flex-1">上传h5</h2>
+            <div class="flex-2">bucket,如果指定路径：bucket/文件夹名1/文件夹名2/...</div>
+            <ui-input class="flex-none" v-on:blur="onInputH5Over" v-value="h5location"></ui-input>
+            <ui-button class="flex-none blue" v-if="testEnvALi" v-on:confirm="onH5AliTest">上传h5到阿里云</ui-button>
+            <ui-button class="flex-none blue" v-if="testEnvHuawei" v-on:confirm="onH5HuaweiTest">上传h5到华为云</ui-button>
+            <ui-button class="flex-none blue" v-if="testEnvTengxun" v-on:confirm="onH5TengxuTest">上传h5到腾讯云</ui-button>
+        </div>
+
+        <div class="layout horizontal center">
+            <h2 class="flex-1">上传WX小游戏remote</h2>
+            <div class="flex-2">bucket,如果指定路径：bucket/文件夹名1/文件夹名2/...</div>
+            <ui-input class="flex-none" v-on:blur="onInputWxRemoteOver" v-value="wxRemoteBucket"></ui-input>
+            <ui-button class="flex-none blue" v-if="testEnvALi" v-on:confirm="onWXAliTest">上传remote到阿里云</ui-button>
+            <ui-button class="flex-none blue" v-if="testEnvHuawei" v-on:confirm="onWXHuaweiTest">上传remote到华为云</ui-button>
+            <ui-button class="flex-none blue" v-if="testEnvTengxun" v-on:confirm="onWXTengxuTest">上传remote到腾讯云</ui-button>
+        </div>
+
+        <div class="layout horizontal center">
+            <h2 class="flex-1">**AccessKeyId</h2>
+            <ui-input class="flex-2" v-on:blur="onInputKeyIdOver" v-value="accessKeyId"></ui-input>
+        </div>
+
+        <div class="layout horizontal center">
+            <h2 class="flex-1">**AccessKeySecret</h2>
+            <ui-input class="flex-2" v-on:blur="onInputSecretOver" v-value="accessKeySecret"></ui-input>
+        </div>
+
+        <div class="layout horizontal center">
+            <h2 class="flex-1">**阿里云Region或华为云Endpoint</h2>
+            <ui-input class="flex-2" v-on:blur="onInputRegionOver" v-value="region"></ui-input>
+        </div>
+
+        <!-- <div class="layout vertical" v-if="testEnvEmail">
+            <ui-prop name="添加邮件接收者">
+                <ui-input class="flex-2" v-on:blur="onInputMailPeopleOver" v-value="addMailPeople"></ui-input>
+                <ui-button v-if="isPeopleExist()">添加</ui-button>
+            </ui-prop>
+            <ui-prop name="邮件接收者" auto-height>
+                <div class="layout vertical">
+                    <ui-checkbox v-for="(index, people) in emailPeopleArray" v-bind:value="people">
+                        {{'['+index+']'+people}}</ui-checkbox>
+                </div>
+            </ui-prop>
+            <ui-prop name="发布的游戏版本">
+                <ui-input class="flex-1" disabled="disabled" v-value="serverRootDir"></ui-input>
+                <ui-input style="width: 100px;" disabled="disabled"
+                    v-if="remoteServerVersion!== null && remoteServerVersion !== '' " v-value="remoteServerVersion">1.0
+                </ui-input>
+            </ui-prop>
+            <ui-prop name="更新内容" auto-height>
+                <ui-text-area class="flex-1" resize-v placeholder="更新内容" v-value="emailContent"></ui-text-area>
+            </ui-prop>
+            <div class="self-end">
+                <ui-button class="self-end green" v-on:confirm="onBtnClickSendMail">发送邮件</ui-button>
+            </div>
+        </div> -->
+    </div>
+</ui-section>

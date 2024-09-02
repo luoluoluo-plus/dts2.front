@@ -1,0 +1,3 @@
+export class FrameEventConst {
+    public static readonly SERVER_TIME_CHANGE = 'SERVER_TIME_CHANGE';
+}

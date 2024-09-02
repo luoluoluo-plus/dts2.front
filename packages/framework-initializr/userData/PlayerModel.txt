@@ -1,0 +1,50 @@
+import IDataModel from "../framework/model/IDataModel";
+import * as DevAPI from "cocosapi";
+
+export default class PlayerModel extends IDataModel {
+    public id: string;
+    public uid: number;
+    public avatar: string = "https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=468727759,3818736238&fm=26&gp=0.jpg";
+    public name: string = "shark";
+    public serverTime: number = 0;
+    public money: number = 199999.9;
+    public user: DevAPI.UserUserInfo;
+
+    constructor() {
+        super('player');
+    }
+
+    initUser(user: DevAPI.UserUserInfo){
+        this.user = user;
+        this.id = user.id;
+        this.uid = user.uid;
+        this.avatar = user.avatar;
+        this.name = user.nickname;
+    }
+
+    //同步
+    demoXXX1(): Promise<any> {
+        var params = {
+        }
+
+        return new Promise((resolve, reject) => {
+            this.sendHttpMsg("index", params, function(res){
+                let data = res.data;
+                resolve(data);
+            }.bind(this))
+        });
+    }
+
+    //异步
+    demoXXX2(){
+        var params = {
+        }
+
+        this.postHttpMsg("myinfo", params, function(res){
+        }.bind(this), false)
+    }
+
+    getServerTime(){
+        
+    }
+}

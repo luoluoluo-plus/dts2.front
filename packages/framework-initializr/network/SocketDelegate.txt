@@ -1,0 +1,138 @@
+import GameDataCenter from "../userData/GameDataCenter";
+import EventMng from "../framework/manager/EventMng";
+import UIHelp from "../framework/ui/UIHelp";
+import { Websocket } from "./Websocket";
+
+export class SocketDelegate {
+    private url: string = 'ws://101.200.124.192:8888';
+    private websocket: Websocket;
+
+    constructor() {
+    }
+   
+    public connect() {
+        this.websocket = new Websocket({
+            url: this.url,
+            pingTimeout: 3000,
+            pongTimeout: 2000,
+            pingMsg: JSON.stringify({"c":"game","m":"pong","data":{}})
+        });
+
+        this.websocket.onopen = this.onopen.bind(this);
+        this.websocket.onmessage = this.onmessage.bind(this);
+        this.websocket.onreconnect = this.onreconnect.bind(this);
+        this.websocket.onclose = this.onclose.bind(this);
+        this.websocket.onerror = this.onerror.bind(this);
+    }
+
+    public send(c: string, m: string, data: any) {
+        data.jwt = GameDataCenter.playerModel.jwt
+        data.id = GameDataCenter.playerModel.id
+        data.uid = GameDataCenter.playerModel.uid
+        var obj: Object = {
+            "c": c,
+            "m": m,
+            "data": data
+        };
+
+        this.websocket.send(JSON.stringify(obj))
+    }
+
+    private onopen(){
+        console.error('connect success');
+        // cc.director.resume();
+        UIHelp.CloseLoding();
+        GameDataCenter.socketModel.login();
+    }
+
+    private onmessage(e){
+        var self = this;
+        if (cc.sys.isNative) {
+            var a = new Uint8Array(e.data)
+            let packet: Object = JSON.parse(self.Utf8ArrayToStr(a))
+            self.appandeMsg(packet);
+        } else {
+            var fileReader = new FileReader();
+            fileReader.onload = function (progressEvent) {
+                var arrayBuffer: ArrayBuffer = this.result as ArrayBuffer;//arrayBuffer即为blob对应的arrayBuffer  
+                var a = new Uint8Array(arrayBuffer)
+                let packet: Object = JSON.parse(self.Utf8ArrayToStr(a))
+                self.appandeMsg(packet);
+            };
+            fileReader.readAsArrayBuffer(e.data);
+        }
+    }
+
+    private onreconnect(){
+        console.error('reconnecting...');
+        // cc.director.pause();
+        UIHelp.ShowLoding();
+    }
+
+    private onclose(){
+        console.error('onclose...');
+    }
+
+    private onerror(){
+        console.error('onerror...');
+    }
+
+    private appandeMsg(data) {
+        var self = this;
+
+        if (data.m != "ping") {
+            if (cc.sys.isNative) {
+                console.log("---------------------接收", JSON.stringify(data))
+            } else {
+                console.log("---------------------接收", data)
+            }
+        }
+
+        data['src'] = 'tcp';
+
+        if (data.m == "ping") {
+            self.send("game", "pong", {});
+        } else {
+            if (data.data.errcode) {
+                
+                UIHelp.ShowTips(data['data']["errmsg"]);
+                return
+            }
+
+            EventMng.emit(`${data.c}_${data.m}`, data.data);
+        }
+    }
+
+    private Utf8ArrayToStr(array) {
+        var out, i, len, c;
+        var char2, char3;
+
+        out = "";
+        len = array.length;
+        i = 0;
+        while (i < len) {
+            c = array[i++];
+            switch (c >> 4) {
+                case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+                    // 0xxxxxxx
+                    out += String.fromCharCode(c);
+                    break;
+                case 12: case 13:
+                    // 110x xxxx   10xx xxxx
+                    char2 = array[i++];
+                    out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
+                    break;
+                case 14:
+                    // 1110 xxxx  10xx xxxx  10xx xxxx
+                    char2 = array[i++];
+                    char3 = array[i++];
+                    out += String.fromCharCode(((c & 0x0F) << 12) |
+                        ((char2 & 0x3F) << 6) |
+                        ((char3 & 0x3F) << 0));
+                    break;
+            }
+        }
+
+        return out;
+    }
+}
